@@ -24,6 +24,7 @@
   procps,
   rustc,
   rustPlatform,
+  versionCheckHook,
 
   # used to generate autocompletions from manpages and for configuration editing in the browser
   usePython ? true,
@@ -306,6 +307,12 @@ let
 
       runHook postCheck
     '';
+
+    nativeInstallCheckInputs = [
+      versionCheckHook
+    ];
+    versionCheckProgramArg = [ "--version" ];
+    doInstallCheck = true;
 
     postInstall =
       ''
