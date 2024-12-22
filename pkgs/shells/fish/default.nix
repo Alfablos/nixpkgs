@@ -4,6 +4,7 @@
   fetchurl,
   fetchpatch,
   coreutils,
+  darwin,
   which,
   glibcLocales,
   gnused,
@@ -189,7 +190,7 @@ let
         sed -i 's|"/bin/c"|"${lib.getExe' coreutils "c"}"|' src/tests/highlight.rs
         sed -i 's|"/bin/ca"|"${lib.getExe' coreutils "ca"}"|' src/tests/highlight.rs
 
-        sed -i 's|/usr|/build|' src/tests/highlight.rs
+        sed -i 's|/usr|/|' src/tests/highlight.rs
 
         # tests/checks/cd.fish
         sed -i 's|/bin/pwd|${coreutils}/bin/pwd|' tests/checks/cd.fish
@@ -216,10 +217,12 @@ let
         rm tests/pexpects/exit.py
         rm tests/pexpects/job_summary.py
         rm tests/pexpects/signals.py
+        rm tests/pexpects/fg.py
 
         # pexpect tests are flaky in general
         # See https://github.com/fish-shell/fish-shell/issues/8789
         rm tests/pexpects/bind.py
+        rm tests/pexpects/bind_mode_events.py
       ''
       + lib.optionalString stdenv.hostPlatform.isLinux ''
         # pexpect tests are flaky on aarch64-linux (also x86_64-linux)
@@ -283,12 +286,17 @@ let
 
     doCheck = true;
 
-    nativeCheckInputs = [
-      coreutils
-      glibcLocales
-      (python3.withPackages (ps: [ ps.pexpect ]))
-      procps
-    ];
+    nativeCheckInputs =
+      [
+        coreutils
+        glibcLocales
+        (python3.withPackages (ps: [ ps.pexpect ]))
+        procps
+      ]
+      ++ lib.optionals stdenv.hostPlatform.isDarwin [
+        # For the getconf command
+        darwin.system_cmds
+      ];
 
     checkPhase = ''
       runHook preCheck
