@@ -15,6 +15,7 @@
   getent,
   libiconv,
   pcre2,
+  pkg-config,
   gettext,
   ncurses,
   python3,
@@ -237,10 +238,10 @@ let
     ];
     strictDeps = true;
     nativeBuildInputs = [
+      cargo
       cmake
       gettext
-
-      cargo
+      pkg-config
       rustc
       rustPlatform.cargoSetupHook
     ];
@@ -313,6 +314,16 @@ let
     ];
     versionCheckProgramArg = [ "--version" ];
     doInstallCheck = true;
+
+    # Ensure that we don't vendor libpcre2, but instead link against the one from nixpkgs
+    installCheckPhase = lib.optionalString (stdenv.hostPlatform.libc == "glibc") ''
+      runHook preInstallCheck
+
+      echo "Checking that we don't vendor pcre2"
+      ldd "$out/bin/fish" | grep ${(lib.getLib pcre2).outPath}
+
+      runHook postInstallCheck
+    '';
 
     postInstall =
       ''
