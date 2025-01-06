@@ -53,6 +53,12 @@ in
       description = "Log level to be used";
     };
 
+    pluginDirs = mkOption {
+      type = with types; nullOr (listOf path);
+      default = [ "${pkgs.cni-plugins}/bin" ];
+      description = "Network plugins directory";
+    };
+
     pauseImage = mkOption {
       type = types.nullOr types.str;
       default = null;
