@@ -136,7 +136,7 @@ in
       };
 
       network = {
-        plugin_dirs = mkIf (cfg.pluginDirs == null) [ "${pkgs.cni-plugins}/bin" ];
+        plugin_dirs = if (cfg.pluginDirs == null) then [ "${pkgs.cni-plugins}/bin" ] else cfg.pluginDirs;
         network_dir = mkIf (cfg.networkDir != null) cfg.networkDir;
       };
 
