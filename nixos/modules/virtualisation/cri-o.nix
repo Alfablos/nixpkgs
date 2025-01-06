@@ -54,7 +54,7 @@ in
     };
 
     pluginDirs = mkOption {
-      type = with types; nullOr (listOf path);
+      type = with types; nullOr (listOf str);
       default = null;
       description = "Network plugins directory";
     };
