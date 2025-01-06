@@ -55,7 +55,7 @@ in
 
     pluginDirs = mkOption {
       type = with types; nullOr (listOf path);
-      default = [ "${pkgs.cni-plugins}/bin" ];
+      default = null;
       description = "Network plugins directory";
     };
 
@@ -136,7 +136,7 @@ in
       };
 
       network = {
-        plugin_dirs = [ "${pkgs.cni-plugins}/bin" ];
+        plugin_dirs = mkIf (cfg.pluginDirs == null) [ "${pkgs.cni-plugins}/bin" ];
         network_dir = mkIf (cfg.networkDir != null) cfg.networkDir;
       };
 
